@@ -51,6 +51,7 @@ services:
       com.centurylinklabs.watchtower.enable: "true"
     networks:
       calendar-internal:
+      auth:
       edge:
         aliases: [calendar-app]
 
@@ -76,6 +77,9 @@ volumes:
 
 networks:
   calendar-internal:
+  auth:
+    external: true
+    name: family-auth
   edge:
     external: true
     name: family-edge

@@ -130,6 +130,7 @@ Both app containers listen internally on `3100`. Only Caddy publishes `80` and `
 
 ```bash
 docker network create family-edge
+docker network create family-auth
 ```
 
 Production URLs are path-based:
@@ -152,6 +153,8 @@ NEXT_PUBLIC_PORTAL_AUTH_URL=https://minminmin.fr
 ```
 
 The edge Caddy is the only public HTTP entry point. It forwards `/calendar/*` to the calendar container and every other path to the portal container.
+
+`family-auth` is a private shared Docker network: `portal-db` joins it with the alias `portal-db`, and the Calendar app joins it to validate Portal sessions. PostgreSQL is not published on a host port.
 
 The Calendar workflow expects the GitHub repository variable `PUBLIC_PORTAL_AUTH_URL` to contain `https://minminmin.fr`. Without it, the browser client falls back to the current origin, which is correct for the path-based production layout but not for a separate local port.
 
