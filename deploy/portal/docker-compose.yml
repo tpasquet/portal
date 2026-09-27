@@ -25,6 +25,22 @@ services:
         condition: service_healthy
     networks: [portal-internal]
 
+  seed:
+    image: ${PORTAL_MIGRATE_IMAGE:-ghcr.io/tpasquet/portal-portal-migrate}:${TAG:-latest}
+    restart: "no"
+    command: ["npm", "run", "db:seed:local", "-w", "@family/db"]
+    environment:
+      PORTAL_DATABASE_URL: ${PORTAL_DATABASE_URL:?set PORTAL_DATABASE_URL}
+      PORTAL_SEED_TERRY_EMAIL: ${PORTAL_SEED_TERRY_EMAIL:?set PORTAL_SEED_TERRY_EMAIL}
+      PORTAL_SEED_TERRY_PASSWORD: ${PORTAL_SEED_TERRY_PASSWORD:?set PORTAL_SEED_TERRY_PASSWORD}
+      PORTAL_SEED_AURELIE_EMAIL: ${PORTAL_SEED_AURELIE_EMAIL:?set PORTAL_SEED_AURELIE_EMAIL}
+      PORTAL_SEED_AURELIE_PASSWORD: ${PORTAL_SEED_AURELIE_PASSWORD:?set PORTAL_SEED_AURELIE_PASSWORD}
+      CALENDAR_URL: ${CALENDAR_URL:?set CALENDAR_URL}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [portal-internal]
+
   app:
     image: ${PORTAL_IMAGE:-ghcr.io/tpasquet/portal-portal}:${TAG:-latest}
     restart: unless-stopped
@@ -34,7 +50,7 @@ services:
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:?set BETTER_AUTH_URL}
       CALENDAR_URL: ${CALENDAR_URL:?set CALENDAR_URL}
     depends_on:
-      migrate:
+      seed:
         condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O- http://localhost:3100/api/health >/dev/null"]
