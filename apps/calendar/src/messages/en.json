@@ -1,0 +1,12 @@
+{
+  "app": { "name": "Calendar" },
+  "calendar": {
+    "day": "Day", "month": "Month", "week": "Week", "agenda": "Agenda", "viewModes": "View", "today": "Today", "newEvent": "New event", "calendars": "Calendars", "previous": "Previous", "next": "Next"
+  },
+  "event": {
+    "title": "Title", "description": "Description", "start": "Start", "end": "End", "allDay": "All day", "category": "Category", "repeat": "Repeat", "repeatNone": "Does not repeat", "repeatDaily": "Every day", "repeatWeekly": "Every week", "repeatMonthly": "Every month", "repeatYearly": "Every year", "save": "Save", "delete": "Delete", "cancel": "Cancel"
+  },
+  "nav": {
+    "menu": "Main menu", "openMenu": "Open menu", "closeMenu": "Close menu", "settings": "Settings", "toggleTheme": "Toggle theme", "backToCalendar": "Back to calendar", "logout": "Log out", "exportIcs": "Export (.ics)"
+  }
+}

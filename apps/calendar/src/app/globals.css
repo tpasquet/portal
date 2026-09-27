@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+@import "tailwindcss";
+@import "react-big-calendar/lib/css/react-big-calendar.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --ink: #202b2b;
+  --muted: #687575;
+  --paper: #f3f0e9;
+  --panel: #fbfaf6;
+  --line: #d9ddd4;
+  --accent: #e56b4e;
+  --accent-deep: #a94436;
+  --sage: #dbe5d3;
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+.dark {
+  --ink: #edf0e8;
+  --muted: #aab5ab;
+  --paper: #202827;
+  --panel: #293331;
+  --line: #43504b;
+  --accent: #f18769;
+  --accent-deep: #ffb09a;
+  --sage: #37463f;
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  background-image:
+    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 24rem),
+    linear-gradient(125deg, var(--paper) 0%, color-mix(in srgb, var(--sage) 48%, var(--paper)) 100%);
+  font-family: "DM Sans", sans-serif;
+}
+
+.rbc-calendar {
+  color: inherit;
+}
+
+.rbc-month-view,
+.rbc-time-view,
+.rbc-agenda-view {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 86%, transparent);
+  overflow: hidden;
+}
+
+.rbc-header,
+.rbc-month-row,
+.rbc-day-bg + .rbc-day-bg,
+.rbc-time-header-content,
+.rbc-time-content > * + * > * {
+  border-color: var(--line);
+}
+
+.rbc-header {
+  padding: 10px 4px;
+  color: var(--muted);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rbc-off-range-bg { background: color-mix(in srgb, var(--sage) 22%, transparent); }
+.rbc-today { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.rbc-current-time-indicator { background-color: var(--accent); }
+.rbc-slot-selection { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+.rbc-event { border: 0; border-radius: 4px; box-shadow: 0 2px 5px rgba(32, 43, 43, 0.12); }
+.rbc-agenda-date-cell, .rbc-agenda-time-cell { color: var(--muted); }
+.rbc-agenda-event-cell { color: var(--ink); }
+
+.calendar-nav { border-color: var(--line); background: color-mix(in srgb, var(--panel) 72%, transparent); }
+.calendar-brand, .calendar-heading { font-family: "Space Grotesk", sans-serif; }
+.calendar-brand { font-size: 1.1rem; font-weight: 600; }
+.calendar-icon-button, .calendar-control { border-color: var(--line); color: var(--ink); background: color-mix(in srgb, var(--panel) 72%, transparent); }
+.calendar-icon-button:hover, .calendar-control:hover { border-color: var(--accent); color: var(--accent-deep); }
+.calendar-text-button { color: var(--accent-deep); font-size: 0.85rem; font-weight: 700; }
+.calendar-text-button:hover { text-decoration: underline; }
+.calendar-add, .calendar-primary-button { background: var(--accent); }
+.calendar-add:hover, .calendar-primary-button:hover { background: var(--accent-deep); }
+.calendar-toolbar { color: var(--ink); }
+.calendar-modal-backdrop { background: color-mix(in srgb, var(--ink) 42%, transparent); }
+.calendar-modal { border: 1px solid var(--line); color: var(--ink); background: var(--panel); }
+.calendar-field { border-color: var(--line); color: var(--ink); }
+.calendar-field:focus { border-color: var(--accent); outline: 2px solid color-mix(in srgb, var(--accent) 22%, transparent); outline-offset: 1px; }
+.calendar-field::placeholder { color: var(--muted); }
+
+.rbc-month-view .rbc-off-range .rbc-button-link,
+.rbc-month-view .rbc-off-range.rbc-button-link {
+  visibility: hidden;
+}
+

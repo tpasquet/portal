@@ -1,0 +1,13 @@
+FROM node:22-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY apps/portal/package.json apps/portal/package.json
+COPY apps/calendar/package.json apps/calendar/package.json
+COPY packages/auth/package.json packages/auth/package.json
+COPY packages/db/package.json packages/db/package.json
+COPY apps/calendar/prisma apps/calendar/prisma
+COPY scripts/migrate-wait.sh /usr/local/bin/migrate-wait.sh
+RUN npm ci --legacy-peer-deps
+RUN chmod +x /usr/local/bin/migrate-wait.sh
+ENV MIGRATION_SCHEMA=apps/calendar/prisma/schema.prisma
+CMD ["/usr/local/bin/migrate-wait.sh"]

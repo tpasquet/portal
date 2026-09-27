@@ -1,0 +1,104 @@
+services:
+  portal-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: portal
+      POSTGRES_PASSWORD: portal
+      POSTGRES_DB: portal
+    volumes:
+      - portal_local_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portal -d portal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  calendar-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: calendar
+      POSTGRES_PASSWORD: calendar
+      POSTGRES_DB: calendar
+    volumes:
+      - calendar_local_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U calendar -d calendar"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  portal-migrate:
+    image: family-portal-portal-migrate:local
+    environment:
+      MIGRATION_HOST: portal-db
+      PORTAL_DATABASE_URL: postgresql://portal:portal@portal-db:5432/portal?schema=public
+    depends_on:
+      portal-db:
+        condition: service_healthy
+
+  portal-seed:
+    image: family-portal-portal-migrate:local
+    command: ["npm", "run", "db:seed:local", "-w", "@family/db"]
+    environment:
+      PORTAL_DATABASE_URL: postgresql://portal:portal@portal-db:5432/portal?schema=public
+      PORTAL_SEED_TERRY_EMAIL: ${PORTAL_SEED_TERRY_EMAIL:?set PORTAL_SEED_TERRY_EMAIL}
+      PORTAL_SEED_TERRY_PASSWORD: ${PORTAL_SEED_TERRY_PASSWORD:?set PORTAL_SEED_TERRY_PASSWORD}
+      PORTAL_SEED_AURELIE_EMAIL: ${PORTAL_SEED_AURELIE_EMAIL:?set PORTAL_SEED_AURELIE_EMAIL}
+      PORTAL_SEED_AURELIE_PASSWORD: ${PORTAL_SEED_AURELIE_PASSWORD:?set PORTAL_SEED_AURELIE_PASSWORD}
+    depends_on:
+      portal-migrate:
+        condition: service_completed_successfully
+
+  calendar-migrate:
+    image: family-portal-calendar-migrate:local
+    environment:
+      MIGRATION_HOST: calendar-db
+      DATABASE_URL: postgresql://calendar:calendar@calendar-db:5432/calendar?schema=public
+    depends_on:
+      calendar-db:
+        condition: service_healthy
+
+  portal:
+    image: family-portal-portal:local
+    ports:
+      - "3100:3100"
+    environment:
+      PORTAL_DATABASE_URL: postgresql://portal:portal@portal-db:5432/portal?schema=public
+      BETTER_AUTH_SECRET: local-development-secret-change-me
+      BETTER_AUTH_URL: http://localhost:3100
+      CALENDAR_URL: http://localhost:3101/calendar
+    depends_on:
+      portal-seed:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3100/calendar/api/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  calendar:
+    image: family-portal-calendar:local
+    ports:
+      - "3101:3100"
+    environment:
+      DATABASE_URL: postgresql://calendar:calendar@calendar-db:5432/calendar?schema=public
+      PORTAL_DATABASE_URL: postgresql://portal:portal@portal-db:5432/portal?schema=public
+      BETTER_AUTH_SECRET: local-development-secret-change-me
+      BETTER_AUTH_URL: http://localhost:3100
+      CALENDAR_URL: http://localhost:3101/calendar
+      NEXT_PUBLIC_PORTAL_AUTH_URL: http://localhost:3100
+      VAPID_SUBJECT: mailto:contact@example.test
+    depends_on:
+      calendar-migrate:
+        condition: service_completed_successfully
+      portal:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3100/api/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+volumes:
+  portal_local_db:
+  calendar_local_db:

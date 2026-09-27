@@ -1,0 +1,12 @@
+{
+  "name": "Family Calendar",
+  "short_name": "Calendar",
+  "description": "Calendrier partagé pour Aurélie et Terry",
+  "start_url": "/calendar",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "icons": [
+    { "src": "/calendar/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

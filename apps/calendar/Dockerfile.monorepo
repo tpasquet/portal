@@ -1,0 +1,35 @@
+FROM node:22-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY apps/calendar/package.json apps/calendar/package.json
+COPY apps/portal/package.json apps/portal/package.json
+COPY packages/auth/package.json packages/auth/package.json
+COPY packages/db/package.json packages/db/package.json
+RUN npm ci --legacy-peer-deps
+
+FROM node:22-alpine AS builder
+WORKDIR /app
+ARG NEXT_PUBLIC_PORTAL_AUTH_URL=http://localhost:3100
+ENV NEXT_PUBLIC_PORTAL_AUTH_URL=$NEXT_PUBLIC_PORTAL_AUTH_URL
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npx prisma generate --schema packages/db/prisma/schema.prisma
+RUN npx prisma generate --schema apps/calendar/prisma/schema.prisma
+RUN npm run build -w apps/calendar
+
+FROM node:22-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3100
+ENV HOSTNAME=0.0.0.0
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+COPY --from=builder /app/apps/calendar/public ./apps/calendar/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/calendar/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/calendar/.next/static ./apps/calendar/.next/static
+COPY --from=builder /app/apps/calendar/prisma ./apps/calendar/prisma
+COPY --from=builder /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+USER nextjs
+EXPOSE 3100
+CMD ["node", "apps/calendar/server.js"]

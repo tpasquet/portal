@@ -1,0 +1,12 @@
+{$DOMAIN} {
+	header X-Robots-Tag "noindex, nofollow"
+	encode gzip
+
+	handle /calendar* {
+		reverse_proxy calendar-app:3100
+	}
+
+	handle {
+		reverse_proxy portal-app:3100
+	}
+}

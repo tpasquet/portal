@@ -1,0 +1,28 @@
+{
+  "name": "family-portal",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w apps/portal",
+    "build": "npm run build -w apps/portal",
+    "start": "npm run start -w apps/portal",
+    "lint": "npm run lint -w apps/portal",
+    "typecheck": "npm run typecheck -w apps/portal",
+    "calendar:build": "npm run build -w apps/calendar",
+    "calendar:lint": "npm run lint -w apps/calendar",
+    "calendar:typecheck": "npm run typecheck -w apps/calendar",
+    "calendar:test": "npm run test -w apps/calendar",
+    "docker:local:build": "docker build -f apps/portal/Dockerfile -t family-portal-portal:local . && docker build -f apps/portal/Dockerfile.migrate -t family-portal-portal-migrate:local . && docker build -f apps/calendar/Dockerfile.monorepo -t family-portal-calendar:local . && docker build -f apps/calendar/Dockerfile.migrate -t family-portal-calendar-migrate:local .",
+    "docker:local:up": "npm run docker:local:build && docker compose -f docker-compose.local.yml up",
+    "docker:local:down": "docker compose -f docker-compose.local.yml down",
+    "docker:local:logs": "docker compose -f docker-compose.local.yml logs -f",
+    "podman:local:build": "podman build -f apps/portal/Dockerfile -t family-portal-portal:local . && podman build -f apps/portal/Dockerfile.migrate -t family-portal-portal-migrate:local . && podman build --build-arg NEXT_PUBLIC_PORTAL_AUTH_URL=http://localhost:3100 -f apps/calendar/Dockerfile.monorepo -t family-portal-calendar:local . && podman build -f apps/calendar/Dockerfile.migrate -t family-portal-calendar-migrate:local .",
+    "podman:local:up": "npm run podman:local:build && podman-compose -f docker-compose.local.yml up",
+    "podman:local:down": "podman-compose -f docker-compose.local.yml down",
+    "podman:local:logs": "podman-compose -f docker-compose.local.yml logs -f"
+  }
+}
