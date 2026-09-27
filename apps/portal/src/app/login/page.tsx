@@ -22,7 +22,15 @@ export default function PortalLoginPage() {
         setError("Adresse e-mail ou mot de passe incorrect.");
         return;
       }
-      router.push("/");
+      const requestedUrl = new URLSearchParams(window.location.search).get("next");
+      let destination = "/";
+      if (requestedUrl) {
+        const parsedUrl = new URL(requestedUrl, window.location.origin);
+        if (parsedUrl.origin === window.location.origin) {
+          destination = `${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+        }
+      }
+      router.push(destination);
       router.refresh();
     } catch {
       setError("Le service de connexion est momentanément indisponible.");
