@@ -150,7 +150,11 @@ The application stacks should use:
 BETTER_AUTH_URL=https://minminmin.fr
 CALENDAR_URL=https://minminmin.fr/calendar
 NEXT_PUBLIC_PORTAL_AUTH_URL=https://minminmin.fr
+PORTAL_DATABASE_URL=postgresql://portal:<password>@db:5432/portal?schema=public
+PORTAL_AUTH_DATABASE_URL=postgresql://portal:<same-password>@portal-db:5432/portal?schema=public
 ```
+
+`PORTAL_DATABASE_URL` is used inside the Portal stack, where the database service is named `db`. `PORTAL_AUTH_DATABASE_URL` is injected into Calendar and reaches the same database through the private `family-auth` network alias `portal-db`.
 
 The edge Caddy is the only public HTTP entry point. It forwards `/calendar/*` to the calendar container and every other path to the portal container.
 
